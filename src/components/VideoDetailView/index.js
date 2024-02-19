@@ -5,8 +5,8 @@ import Loader from 'react-loader-spinner'
 import Header from '../Header'
 import NavigationBar from '../NavigationBar'
 import ThemeAndVideoContext from '../../context/ThemeAndVideoContext'
-import PlayVideoView from '../HomeVideos'
-import FailureView from '../PlayVideoView'
+import PlayVideoView from '../PlayVideoView'
+import FailureView from '../FailureView'
 
 import {VideoDetailViewContainer, LoaderContainer} from './styledComponents'
 
@@ -29,19 +29,6 @@ class VideoDetailView extends Component {
     this.getVideoDetails()
   }
 
-  formattedData = data => ({
-    id: data.video_details.id,
-    title: data.video_details.title,
-    videoUrl: data.video_details.video_url,
-    thumbnailUrl: data.video_details.thumbnail_url,
-    viewCount: data.video_details.view_count,
-    publishedAt: data.video_details.published_at,
-    description: data.video_details.description,
-    name: data.video_details.channel.name,
-    profileImageUrl: data.video_details.channel.profile_image_url,
-    subscriberCount: data.video_details.channel.subscriber_count,
-  })
-
   getVideoDetails = async () => {
     this.setState({apiStatus: apiStatusConstants.inProgress})
 
@@ -59,7 +46,21 @@ class VideoDetailView extends Component {
     const response = await fetch(url, options)
     if (response.ok) {
       const data = await response.json()
-      const updatedData = this.formattedData(data)
+      const updatedData = {
+        id: data.video_details.id,
+        title: data.video_details.title,
+        videoUrl: data.video_details.video_url,
+        thumbnailUrl: data.video_details.thumbnail_url,
+        viewCount: data.video_details.view_count,
+        publishedAt: data.video_details.published_at,
+        description: data.video_details.description,
+        channel: {
+          name: data.video_details.channel.name,
+          profileImageUrl: data.video_details.channel.profile_image_url,
+          subscriberCount: data.video_details.channel.subscriber_count,
+        },
+      }
+
       this.setState({
         videoDetails: updatedData,
         apiStatus: apiStatusConstants.success,
